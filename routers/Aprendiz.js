@@ -23,11 +23,11 @@ router.post('/crearaprendiz',
 );
 
 router.get('/obteneraprendices',
-    validarJWT,
+    //validarJWT,
     ControllerAprendiz.obtenerAprendices
 )
 router.get('/obteneraprendiz/:nombre',
-    validarJWT,
+    //validarJWT,
     [
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),
         check('nombre').custom(helperAprendiz.validateNombre), 
@@ -35,7 +35,7 @@ router.get('/obteneraprendiz/:nombre',
     ControllerAprendiz.obteneraprendiz
 )
 router.get('/aprendices/search',
-    validarJWT,
+    //validarJWT,
     [
         check('nombre').optional().isString().withMessage('El nombre debe ser una cadena de texto'),
         check('ficha').optional().isString().withMessage('La ficha debe ser una cadena de texto'),
@@ -45,7 +45,7 @@ router.get('/aprendices/search',
     ControllerAprendiz.obtenerAprendicesSearch
 )
 router.put('/actualizaraprendiz/:id',
-    validarJWT,
+    //validarJWT,
     [
         check('id')
         .isMongoId().withMessage('El ID no es válido'),
