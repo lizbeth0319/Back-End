@@ -5,7 +5,7 @@ import cors from 'cors';
 // En app.js
 
 // 💡 CORREGIR: Debe ser 'Authentication.js' (con A mayúscula)
-import Authenticationrouter from './routers/**Authentication.js**'
+import Authenticationrouter from './routers/Authentication.js'
 //import userrouter from './routers/User.js';
 import Aprendizrouter from './routers/aprendiz.js'
 import permisorouter from './routers/permiso.js'
