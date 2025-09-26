@@ -1,4 +1,4 @@
-import Aprendiz from "../models/Aprendiz.js";
+import Aprendiz from "../models/aprendiz.js";
 
 const helperAprendiz={
     validateNombre: async(nombre)=>{

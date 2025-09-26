@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import User from '../models/User.js';
+import User from '../models/user.js';
 const secrety = process.env.JWT_KEY
 
 export const validarJWT = async (req, res, next) => {

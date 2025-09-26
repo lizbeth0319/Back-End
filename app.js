@@ -2,10 +2,10 @@ import express from "express";
 import connectDB from "./config/db.js";
 import "dotenv/config";
 import cors from 'cors';
-import authenticationrouter from './routers/Authentication.js';
+import authenticationrouter from './routers/authentication.js';
 //import userrouter from './routers/User.js';
-import Aprendizrouter from './routers/Aprendiz.js'
-import permisorouter from './routers/Permiso.js'
+import Aprendizrouter from './routers/aprendiz.js'
+import permisorouter from './routers/permiso.js'
 const app = express();
 const PORT = process.env.PORT; 
 

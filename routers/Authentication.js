@@ -1,7 +1,7 @@
 import { Router } from "express";
 import  AuthenticationController from "../controllers/authentication.js"
 import { validarCampos } from '../middleware/validar-campo.js';
-import helpersAuthentication from "../helpers/Authentication.js";
+import helpersAuthentication from "../helpers/authentication.js";
 import { check } from "express-validator";
 const router = Router();
 

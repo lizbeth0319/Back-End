@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const { Schema, model, ObjectId } = mongoose;
-import Aprendiz from './Aprendiz.js'
-import User from './User.js';
+import Aprendiz from './aprendiz.js'
+import User from './user.js';
 const PermisoSchema = new Schema({
     //id
     id_aprendiz: { type: String, ref: 'Aprendiz', required: true },//nmbrea aprendiz

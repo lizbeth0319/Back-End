@@ -1,7 +1,7 @@
 import { Router } from "express"; 
-import Permisocontroller from '../controllers/Permiso.js'
+import Permisocontroller from '../controllers/permiso.js'
 import { validarCampos } from '../middleware/validar-campo.js';
-import Helperpermiso from '../helpers/Permiso.js'
+import Helperpermiso from '../helpers/permiso.js'
 import { check } from "express-validator";
 import { validarJWT } from "../middleware/validar-jwt.js";
 const router = Router();

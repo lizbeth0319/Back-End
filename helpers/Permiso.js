@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/user.js";
 
 /* aprendiz,//nombreenfermera , fecha_solicitud , motivo,intructor,//nombrecompetencia,hora */
 
