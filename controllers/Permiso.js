@@ -1,4 +1,4 @@
-import Permiso from "../models/permiso.js";
+import Permiso from "../models/Permiso.js";
 
 const Permisocontroller={
     crearPermiso: async (req, res)=>{

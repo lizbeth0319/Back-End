@@ -4,7 +4,7 @@
 •	GET /api/aprendices/search: Buscar un aprendiz por nombre, ficha o programa.
 •	Router.put edtar 
 •	Router.delete */
-import Aprendiz from "../models/aprendiz.js";
+import Aprendiz from  "../models/Aprendiz.js";
 import bcrypt from "bcryptjs";
 //import User from "../models/User.js";
 

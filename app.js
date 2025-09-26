@@ -7,8 +7,8 @@ import cors from 'cors';
 // 💡 CORREGIR: Debe ser 'Authentication.js' (con A mayúscula)
 import Authenticationrouter from './routers/Authentication.js'
 //import userrouter from './routers/User.js';
-import Aprendizrouter from './routers/aprendiz.js'
-import permisorouter from './routers/permiso.js'
+import Aprendizrouter from './routers/Aprendiz.js'
+import permisorouter from './routers/Permiso.js'
 const app = express();
 const PORT = process.env.PORT; 
 

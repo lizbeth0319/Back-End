@@ -1,7 +1,7 @@
 import bcryptjs from "bcryptjs";
 
-import User from "../models/user.js";
-import helpersAuthentication from "../helpers/authentication.js";
+import User from "../models/User.js";
+import helpersAuthentication from "../helpers/Authentication.js";
 import { generarJWT } from "../middleware/generar-jwt.js";
 
 const AuthenticationController = {
