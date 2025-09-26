@@ -2,8 +2,7 @@ import express from "express";
 import connectDB from "./config/db.js";
 import "dotenv/config";
 import cors from 'cors';
-import authenticationrouter from './routers/authentication.js';
-import authRouter from './routers/**Authentication.js**'; 
+import Authenticationrouter from './routers/authentication.js'
 //import userrouter from './routers/User.js';
 import Aprendizrouter from './routers/aprendiz.js'
 import permisorouter from './routers/permiso.js'
@@ -15,7 +14,7 @@ app.use(cors());
 app.use(express.static(`public`));
 
 // Rutas
-app.use('/api',authRouter);
+app.use('/api',Authenticationrouter);
 app.use('/api/aprendiz',Aprendizrouter);
 app.use('/api/permiso',permisorouter);
 
