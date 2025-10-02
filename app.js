@@ -1,5 +1,5 @@
 import express from "express";
-import connectDBatlas from './config/db-compass.js'
+import connectDBatlas from './config/db-atlas.js'
 import connectDBcompass from './config/db-compass.js'
 import "dotenv/config";
 import cors from 'cors';
