@@ -25,8 +25,8 @@ console.log("DEBUG CLOUD_NAME:", process.env.CLOUDINARY_NAME);
 
 app.listen(PORT, () => {
     console.log(` Servidor escuchando en http: ${PORT}`);
-  //  connectDBatlas().then(() => {
-    connectDBcompass().then(() => {
+    connectDBatlas().then(() => {
+    //connectDBcompass().then(() => {
     }).catch(error => {
         console.error("Failed to start server due to DB connection error:", error);
     });
