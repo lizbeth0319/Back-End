@@ -3,13 +3,13 @@ const { Schema, model, ObjectId } = mongoose;
 
 const AprendizSchema = new Schema({
     nombre: { type: String, required: true },
-    ficha:{ type:Number , required:true },  
+    ficha:{ type:String, required:true },  
     programa: { type: String, required: true },
     email: { 
         type: String, 
         required: true, 
         unique: true, 
-        trim: true, 
+        trim: true,  
         lowercase: true,
         match: [/^\w+([.-]?\w+)@\w+([.-]?\w+)(\.\w{2,3})+$/, 'Correo no válido.']
     },

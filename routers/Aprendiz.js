@@ -2,16 +2,15 @@ import { Router } from "express";
 import { validarCampos } from "../middleware/validar-campo.js";
 import ControllerAprendiz from "../controllers/Aprendiz.js";
 import helperAprendiz from "../helpers/Aprendiz.js";
-import { check } from "express-validator"; 
+import { check, validationResult } from "express-validator"; 
 import { validarJWT } from "../middleware/validar-jwt.js";
+import validarRol from "../middleware/validar-rol.js";
 const router = Router();
 
 router.post('/crearaprendiz',
-    //validarJWT,
-    //validar rol
+    validarJWT,
     [
         //nombre, ficha, programa, email, password
-        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
         check('nombre').custom(helperAprendiz.validateNombre),
         check('ficha').custom(helperAprendiz.validarFicha),
         check('programa').custom(helperAprendiz.validarPrograma),
@@ -23,19 +22,19 @@ router.post('/crearaprendiz',
 );
 
 router.get('/obteneraprendices',
-    //validarJWT,
+    validarJWT,
     ControllerAprendiz.obtenerAprendices
 )
 router.get('/obteneraprendiz/:nombre',
-    //validarJWT,
-    [
+    validarJWT,
+    /* [
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),
         check('nombre').custom(helperAprendiz.validateNombre), 
-    ],
+    ], */
     ControllerAprendiz.obteneraprendiz
 )
 router.get('/aprendices/search',
-    //validarJWT,
+    validarJWT,   
     [
         check('nombre').optional().isString().withMessage('El nombre debe ser una cadena de texto'),
         check('ficha').optional().isString().withMessage('La ficha debe ser una cadena de texto'),
@@ -45,7 +44,7 @@ router.get('/aprendices/search',
     ControllerAprendiz.obtenerAprendicesSearch
 )
 router.put('/actualizaraprendiz/:id',
-    //validarJWT,
+    validarJWT,    
     [
         check('id')
         .isMongoId().withMessage('El ID no es válido'),
@@ -69,7 +68,7 @@ router.put('/actualizaraprendiz/:id',
     ControllerAprendiz.actualizarAprendiz
 )
 router.delete('/eliminaraprendiz/:id',
-     //validarJWT
+    validarJWT,
     [
         check('id')
         .isMongoId().withMessage('El ID no es válido'),

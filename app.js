@@ -1,10 +1,10 @@
 import express from "express";
-import connectDB from "./config/db.js";
+import connectDBatlas from './config/db-compass.js'
+import connectDBcompass from './config/db-compass.js'
 import "dotenv/config";
 import cors from 'cors';
-// En app.js
+import { configureCloudinary } from "./config/cloudinary.js"; 
 
-// 💡 CORREGIR: Debe ser 'Authentication.js' (con A mayúscula)
 import Authenticationrouter from './routers/Authentication.js'
 //import userrouter from './routers/User.js';
 import Aprendizrouter from './routers/Aprendiz.js'
@@ -21,11 +21,14 @@ app.use('/api',Authenticationrouter);
 app.use('/api/aprendiz',Aprendizrouter);
 app.use('/api/permiso',permisorouter);
 
+console.log("DEBUG CLOUD_NAME:", process.env.CLOUDINARY_NAME);
 
 app.listen(PORT, () => {
     console.log(` Servidor escuchando en http: ${PORT}`);
-    connectDB().then(() => {
+  //  connectDBatlas().then(() => {
+    connectDBcompass().then(() => {
     }).catch(error => {
         console.error("Failed to start server due to DB connection error:", error);
     });
 });
+configureCloudinary();

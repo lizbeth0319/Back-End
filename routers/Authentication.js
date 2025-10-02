@@ -4,16 +4,20 @@ import { validarCampos } from '../middleware/validar-campo.js';
 import helpersAuthentication from "../helpers/Authentication.js";
 import { check } from "express-validator";
 const router = Router();
-
-
+//---- imagen 
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+//
 router.post('/auth/register',
+    upload.single('firma'),//nombre docn el que tien que entrar
     [
         check('email').custom(helpersAuthentication.validarEmail),
         check('nombre').custom(helpersAuthentication.validarNombre),
         check('password').custom(helpersAuthentication.validarPassword),
         check('rol').custom(helpersAuthentication.validarRol),
         validarCampos
-    ],
+    ], 
     AuthenticationController.create);
 
 router.post('/auth/login', // email, password
@@ -25,7 +29,6 @@ router.post('/auth/login', // email, password
         validarCampos
     ],
     AuthenticationController.Login)
-
 
 
 export default router;

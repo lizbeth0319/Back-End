@@ -1,5 +1,14 @@
 import bcryptjs from "bcryptjs";
+//------- cloudinari
+import { v2 as cloudinary } from 'cloudinary';
+import { Stream } from 'stream';
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET
+});
 
+//------------------------------
 import User from "../models/User.js";
 import helpersAuthentication from "../helpers/Authentication.js";
 import { generarJWT } from "../middleware/generar-jwt.js";
@@ -7,28 +16,56 @@ import { generarJWT } from "../middleware/generar-jwt.js";
 const AuthenticationController = {
 
     create: async (req, res) => {
+        let newUser;
         try {
             console.log('entro');
+            const { nombre, password, email, rol } = req.body;
+            const archivoImagen = req.file;
+            let estado_correo= true;
+            // ----------------validacion imagen------------
+            if (rol === 'instructor' && !archivoImagen) {
+                return res.status(400).json({
+                    msg: 'Para crear un Instructor, la imagen (firma o foto) es obligatoria.'
+                });
+            }
 
-            const { nombre, password, email, rol } = req.body; 
+            let firma_url = null;
+            let cloudinary_id = null;
+            // ----------------------------------------------------
+            if (archivoImagen) {
+                // El await fuerza a esperar el resultado de Cloudinary
+                const uploadResult = await helpersAuthentication.uploadToCloudinary(archivoImagen.buffer, 'img-sign');
 
+                firma_url = uploadResult.secure_url;
+                cloudinary_id = uploadResult.public_id;
+            }
+            //----------------------------
             const salt = bcryptjs.genSaltSync();
-            const hash = bcryptjs.hashSync(password, salt);
+            const password_hash = bcryptjs.hashSync(password, salt);
 
-            const newUser = new User({
+            //-------estado
+            if(rol === 'instructor'){
+                estado_correo= false
+            }
+
+
+            newUser = new User({ // 💡 Usamos la variable definida al inicio del try
                 nombre,
                 email,
-                password_hash: hash, 
-                rol
+                password_hash,
+                rol,
+                firma_url, // Será la URL de Cloudinary o null
+                cloudinary_id, // Será el ID público o null
+                estado_correo:estado_correo
             });
-
             const savedUser = await newUser.save();
 
             const userResponse = {
-                document: savedUser.document,
-                name: savedUser.name,
+                id: savedUser._id,
+                nombre: savedUser.nombre, // Asegúrate de usar 'nombre' o 'name' según tu modelo
                 email: savedUser.email,
-                createdAt: savedUser.createdAt
+                rol: savedUser.rol,
+                firma_url: savedUser.firma_url // Incluimos la URL en la respuesta
             };
             console.log('entro');
             res.status(201).json({
@@ -43,6 +80,8 @@ const AuthenticationController = {
                     message: 'El email ya está registrado'
                 });
             }
+            console.error('Error al crear usuario:', error);
+            res.status(500).json({ msg: 'Error interno del servidor.' });
         }
     },
 

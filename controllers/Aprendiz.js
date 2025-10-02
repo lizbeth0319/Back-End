@@ -4,17 +4,18 @@
 •	GET /api/aprendices/search: Buscar un aprendiz por nombre, ficha o programa.
 •	Router.put edtar 
 •	Router.delete */
-import Aprendiz from  "../models/Aprendiz.js";
+import Aprendiz from "../models/Aprendiz.js";
 import bcrypt from "bcryptjs";
 //import User from "../models/User.js";
 
 const ControllerAprendiz = {
     crearaprendiz: async (req, res) => {
+        console.log('ya entro a crear');
         try {
             const { nombre, ficha, programa, email, password } = req.body;
 
             const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(req.body.password, salt);
+            const hashedPassword = await bcrypt.hash(password, salt);
 
             const newAprendiz = new Aprendiz({
                 nombre,
@@ -24,6 +25,7 @@ const ControllerAprendiz = {
                 password_hash: hashedPassword
             });
             const savedAprendiz = await newAprendiz.save();
+
             const datosAprendiz = {
                 nombre: savedAprendiz.nombre,
                 ficha: savedAprendiz.ficha,
@@ -37,6 +39,12 @@ const ControllerAprendiz = {
             });
         } catch (error) {
             console.error('Error en createUsers:', error);
+            if (error.code === 11000) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'El email ya está registrado para otro aprendiz.'
+                });
+            }
             res.status(500).json({
                 success: false,
                 message: 'Error al crear usuario'
@@ -61,12 +69,16 @@ const ControllerAprendiz = {
     },
     obteneraprendiz: async (req, res) => { // Obtener un aprendiz por ID que seria su nombre
         try {
-            const aprendiz = await Aprendiz.findOne({ nombre: String(nombre) }, '-password_hash')
+            const { nombre } = req.params;
+            console.log(nombre)
+            const aprendiz = await Aprendiz.find({
+                nombre: { $regex: nombre, $options: 'i' }
+            });
             console.log(aprendiz);
-            if (!aprendiz) {
+            if (aprendiz.length === 0) {
                 return res.status(404).json({
                     success: false,
-                    msg: "Aprendiz no encontrado"
+                    msg: `No se encontraron aprendices cuyo nombre contenga "${nombre}".`
                 });
             }
             res.status(200).json({
@@ -77,13 +89,13 @@ const ControllerAprendiz = {
         } catch (error) {
             res.status(500).json({
                 success: false,
-                message: 'Error al obtener la venta'
+                message: 'Error al obtener el aprendiz'
             });
         }
     },
     obtenerAprendicesSearch: async (req, res) => {
         try {
-            const { query } = req.query;
+            const { query } = req.query; //pepito perrez =PEPITO PERES
             const regex = new RegExp(query, 'i'); // Búsqueda insensible a mayúsculas/minúsculas
             const aprendices = await Aprendiz.find({
                 $or: [
@@ -108,9 +120,9 @@ const ControllerAprendiz = {
             });
         }
     },
-    actualizarAprendiz: async (req, res) =>{
+    actualizarAprendiz: async (req, res) => {
         try {
-            const {nombre}=req.params
+            const { nombre } = req.params
             const { ficha, programa, email, password } = req.body;
             const aprendiz = await Aprendiz.findOne({ nombre: String(nombre) });
             if (!aprendiz) {
@@ -146,9 +158,9 @@ const ControllerAprendiz = {
             });
         }
     },
-    eliminarAprendiz:async(req,res )=>{
+    eliminarAprendiz: async (req, res) => {
         try {
-            const {nombre}=req.params
+            const { nombre } = req.params
             const deletedAprendiz = await Aprendiz.findOneAndDelete({ nombre: String(nombre) });
             if (!deletedAprendiz) {
                 return res.status(404).json({

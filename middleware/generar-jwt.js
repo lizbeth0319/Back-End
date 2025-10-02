@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
+//const payload
 
 export const generarJWT = (uid) => {
     return new Promise((resolve, reject) => {

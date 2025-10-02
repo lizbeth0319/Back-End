@@ -1,6 +1,8 @@
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 
+import { cloudinary } from '../config/cloudinary.js';
+
 
 const helpersAuthentication = {
     // helpers/Authentication.js
@@ -46,7 +48,7 @@ const helpersAuthentication = {
     },
     validarEmailLogin: async (email) => {
         if (!email) throw new Error('El email es requerido');
-        if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)) {
+        if (!/^\w+([.-]?\w+)@\w+([.-]?\w+)(\.\w{2,3})+$/.test(email)) {
             throw new Error('El correo debe ser @gmail.com');
         }
         return true;
@@ -63,6 +65,29 @@ const helpersAuthentication = {
         if (!validaPassword) throw new Error('Credenciales inválidas');
 
         return usuario;
+    },
+    validacionimagen: async (Image) => {
+        if (rol === 'instructor' && !archivoImagen) {
+            // Si el rol es 'instructor' y NO hay archivo, devuelve un error 400.
+            return res.status(400).json({
+                msg: 'Para crear un Instructor, la imagen (firma o foto) es obligatoria.'
+            });
+        }
+    },
+    uploadToCloudinary: (fileBuffer, folderName) => {
+        return new Promise((resolve, reject) => {
+            const streamUpload = cloudinary.uploader.upload_stream(
+                { folder: folderName, resource_type: 'image' }, // Cambié 'firma' por 'image' para ser más estándar, aunque 'firma' también funciona.
+                (error, uploadResult) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(uploadResult);
+                    }
+                }
+            );
+            streamUpload.end(fileBuffer);
+        });
     }
 }
 export default helpersAuthentication;
