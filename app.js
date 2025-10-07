@@ -6,9 +6,10 @@ import cors from 'cors';
 import { configureCloudinary } from "./config/cloudinary.js"; 
 
 import Authenticationrouter from './routers/Authentication.js'
-//import userrouter from './routers/User.js';
+import userrouter from './routers/User.js';
 import Aprendizrouter from './routers/Aprendiz.js'
 import permisorouter from './routers/Permiso.js'
+import router from "./routers/Authentication.js";
 const app = express();
 const PORT = process.env.PORT; 
 
@@ -20,6 +21,7 @@ app.use(express.static(`public`));
 app.use('/api',Authenticationrouter);
 app.use('/api/aprendiz',Aprendizrouter);
 app.use('/api/permiso',permisorouter);
+app.use('/api/user',userrouter);
 
 console.log("DEBUG CLOUD_NAME:", process.env.CLOUDINARY_NAME);
 

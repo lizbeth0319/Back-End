@@ -1,28 +1,28 @@
-import { param } from "express-validator";
 import Permiso from "../models/Permiso.js";
 import Aprendiz from "../models/Aprendiz.js";
 const Permisocontroller = {
     crearPermiso: async (req, res) => {
+        console.log('entrada datos  fuc crear');
+
         try {
             const {
                 aprendiz,//nombre
                 //traer datos aprendiz ?
-                enfermera,
-                fecha_solicitud,
+                nombreenfermera,
                 motivo,
-                intructor,//nombre
-                competencia,
+                intructor,
+                nombrecompetencia,
                 hora
             } = req.body
-
+            const fechaActual = new Date();
             const newPermiso = new Permiso({
                 id_aprendiz: aprendiz,
-                enfermera, // enfermera: req.usuario.id,
-                fecha_solicitud,
+                enfermera: nombreenfermera,
+                fecha_solicitud: fechaActual,
                 motivo,
                 estado: 'pendiente',
                 id_intructor: intructor,
-                competencia,
+                competencia: nombrecompetencia,
                 hora
             });
             const savePermiso = await newPermiso.save();
@@ -61,22 +61,32 @@ const Permisocontroller = {
 
     obtenerpermiso: async (req, res) => {
         try {
-            const { id } = req.params;
-            const permiso = await Permiso.findById(id)
-                .populate('id_aprendiz', 'nombre')
-                .populate('enfermera', 'nombre');
-
-            if (!permiso) {
-                return res.status(404).json({
+            const { query } = req.query;
+            if (!query) {
+                return res.status(400).json({
                     success: false,
-                    msg: 'Permiso no encontrado.'
+                    msg: "El parámetro de búsqueda 'query' es requerido."
                 });
             }
-
+            const regex = new RegExp(query, 'i');
+            const aprendices = await Permiso.find({
+                $or: [
+                    { enfermera: regex },
+                    { id_intructor: regex },
+                    { estado: regex },
+                    { hora: regex } //agregar fecha
+                ]
+            });
+            if (aprendices.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    msg: `No se encontraron permisos con término: "${query}"`
+                });
+            }
             res.status(200).json({
                 success: true,
-                msg: 'Permiso no encontrado.',
-                data: permiso
+                msg: "Búsqueda de aprendices realizada exitosamente",
+                data: aprendices
             });
         } catch (error) {
             console.error('Error al obtener permiso por ID:', error);
@@ -90,19 +100,19 @@ const Permisocontroller = {
     obtenerpermisoAprendiz: async (req, res) => {
         try {
             const { id_aprendiz } = req.params;
-            const permisos = await Permiso.find({ id_aprendiz })
-                .populate('id_aprendiz', 'nombre')
-                .sort({ fecha_solicitud: -1 });
-
+            console.log(id_aprendiz);
+            const permisos = await Permiso.find({
+                id_aprendiz: { $regex: id_aprendiz, $options: 'i' }
+            })
             if (permisos.length === 0) {
                 return res.status(404).json({
                     success: false,
-                    msg: 'No se encontraron permisos para este aprendiz.'
+                    msg: 'No se encontraron permisos para este aprendiz.' //8
                 });
             }
             res.status(200).json({
                 success: true,
-                msg: 'permisos del aprendiz enocntrado',
+                msg: 'permisos del aprendiz enocntrado 115',
                 data: permisos
             });
         } catch (error) {
@@ -115,36 +125,34 @@ const Permisocontroller = {
     },
 
     buscarpermisoAprediz: async (req, res) => {
+        console.log("enrtre");
         try {
-            const { nombre, ficha, fecha_solicitud } = req.query;
-            let filtro = {};
-            //validar datos
-            //validar fecha
-            if (nombre) {
-                // Nota: Esto asume que tienes el nombre del aprendiz en tu modelo Permiso o puedes buscarlo por el modelo Aprendiz.
-                // Para la búsqueda real, deberías buscar el ID en el modelo Aprendiz primero y luego filtrar por id_aprendiz.
-                // Ejemplo simplificado: filtro.nombre_aprendiz = { $regex: nombre_aprendiz, $options: 'i' };
-                filtro.nombre = {
-                    $regex: nombre,
-                    $options: 'i'
-                }
+            const { query } = req.query;
+            if (!query) {
+                return res.status(400).json({
+                    success: false,
+                    msg: "El parámetro de búsqueda 'query' es requerido."
+                });
             }
-
-            // Si la búsqueda es por fecha (debes manejar el formato de fecha correctamente)
-            if (fecha_solicitud) {
-                // Ejemplo: Buscar por un día específico (requiere manejo de zonas horarias)
-                // filtro.fecha_solicitud = { $gte: fechaInicioDelDia, $lt: fechaFinDelDia };
-                filtro.fecha_solicitud = {
-                    $gte: fecha_solicitud
-                }
+            const regex = new RegExp(query, 'i');
+            const aprendices = await Aprendiz.find({
+                $or: [
+                    { nombre: regex },
+                    { ficha: regex },
+                    { programa: regex }
+                ]
+            });
+            if (aprendices.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    msg: `No se encontraron aprendices con el término: "${query}"`
+                });
             }
-            const resultados = await Permiso.find(filtro)
-                .populate('id_aprendiz', 'nombre'); // Asegúrate de popular
-
+            console.log(aprendices);
             res.status(200).json({
-                succes: true,
-                msg: 'datos encontrados',
-                data: resultados
+                success: true,
+                msg: "Búsqueda de aprendices realizada exitosamente",
+                data: aprendices
             });
         } catch (error) {
             console.error('Error en la búsqueda de permisos:', error);
@@ -176,31 +184,6 @@ const Permisocontroller = {
 
 export default Permisocontroller;
 
-//por fuera para saber depemdendo de la seccion /esta parte es para el correo
-const actualizarEstadoPermiso = (nuevoEstado) => async (req, res) => {
-    try {
-        const { id } = req.params;
-        // Opcional: Validar que el instructor autenticado sea el mismo asignado en el permiso (id_intructor)
-
-        const permiso = await Permiso.findByIdAndUpdate(
-            id,
-            { estado: nuevoEstado },
-            { new: true } 
-        );
-
-        if (!permiso) {
-            return res.status(404).json({ msg: 'Permiso no encontrado.' });
-        }
-
-        res.status(200).json({ msg: `Permiso ${nuevoEstado}.`, permiso });
-    } catch (error) {
-        console.error(`Error al ${nuevoEstado} el permiso:`, error);
-        res.status(500).json({ msg: 'Error interno del servidor.' });
-    }
-};
-
-export const aprobarPermiso = actualizarEstadoPermiso('aprobado');
-export const denegarPermiso = actualizarEstadoPermiso('rechazado');
 
 
 /* •	POST /api/permisos: Crear un nuevo permiso. Solo la enfermera puede hacer esta petición.-

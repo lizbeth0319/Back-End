@@ -11,9 +11,13 @@ const AprendizSchema = new Schema({
         unique: true, 
         trim: true,  
         lowercase: true,
-        match: [/^\w+([.-]?\w+)@\w+([.-]?\w+)(\.\w{2,3})+$/, 'Correo no válido.']
+        match:[/^\w+([.-]?\w+)@\w+([.-]?\w+)(\.\w{2,3})+$/, 'Correo no válido.']
     },
-    password_hash: { type: String, required: true, minlength: 8 }//areglabe el largor
+    tipo_programa:{
+        type:String,
+        enum:['tecnologo','tecnico'],
+        require:true
+    }
 
 });
 const Aprendiz = model('Aprendiz', AprendizSchema);

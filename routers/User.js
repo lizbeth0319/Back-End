@@ -1,11 +1,16 @@
 import { Router } from "express";
-import  UserController from "../controllers/User.js"
 import { validarCampos } from "../middleware/validar-campo.js";
-import helpersUse from "../helpers/db-validators.js";
-import validarRol from "../middleware/validar-rol.js";
+import UserController from "../controllers/User.js"
+
+import { check,query ,param,validationResult } from "express-validator"; 
+import { validarJWT } from "../middleware/validar-jwt.js";
+
 const router = Router();
 
-//agregr
-router.post();
+router.put('/actualizarestadocorreo/:nombre',
+    validarJWT,
+    UserController.actualizarestadocorreo
+);
 
+//router.get('/porteria/permisos/aprobados')
 export default router;

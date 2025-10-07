@@ -2,9 +2,9 @@ import { Router } from "express";
 import { validarCampos } from "../middleware/validar-campo.js";
 import ControllerAprendiz from "../controllers/Aprendiz.js";
 import helperAprendiz from "../helpers/Aprendiz.js";
-import { check, validationResult } from "express-validator"; 
+import { check,query ,validationResult } from "express-validator"; 
 import { validarJWT } from "../middleware/validar-jwt.js";
-import validarRol from "../middleware/validar-rol.js";
+//import validarRol from "../middleware/validar-rol.js";
 const router = Router();
 
 router.post('/crearaprendiz',
@@ -15,7 +15,7 @@ router.post('/crearaprendiz',
         check('ficha').custom(helperAprendiz.validarFicha),
         check('programa').custom(helperAprendiz.validarPrograma),
         check('email').custom(helperAprendiz.validarEmail),
-        check('password').custom(helperAprendiz.validarPassword),
+        check('tipo_programa').custom(helperAprendiz.validartipo_programa),
         validarCampos
     ], 
     ControllerAprendiz.crearaprendiz
@@ -33,24 +33,26 @@ router.get('/obteneraprendiz/:nombre',
     ], */
     ControllerAprendiz.obteneraprendiz
 )
+// Archivo: routers/Aprendiz.js (Ruta Corregida)
+//http://localhost:3000/api/aprendices/search?nombre=Carlos&ficha=2458123
+// Si usas: import { check, query, validationResult } from "express-validator"; 
 router.get('/aprendices/search',
-    validarJWT,   
+    validarJWT,  
     [
-        check('nombre').optional().isString().withMessage('El nombre debe ser una cadena de texto'),
-        check('ficha').optional().isString().withMessage('La ficha debe ser una cadena de texto'),
-        check('programa').optional().isString().withMessage('El programa debe ser una cadena de texto'),
+        query('nombre').optional().isString().withMessage('El nombre debe ser una cadena de texto'),
+        query('ficha').optional().isString().withMessage('La ficha debe ser una cadena de texto'),
+        query('programa').optional().isString().withMessage('El programa debe ser una cadena de texto'),
+        //fecha
         validarCampos
     ],
     ControllerAprendiz.obtenerAprendicesSearch
-)
-router.put('/actualizaraprendiz/:id',
+);
+router.put('/actualizaraprendiz/:nombre',
     validarJWT,    
-    [
-        check('id')
-        .isMongoId().withMessage('El ID no es válido'),
-        check('nombre')
+    [    
+        /* check('nombre')
         .optional()
-        .custom(helperAprendiz.validateNombre),
+        .custom(helperAprendiz.validateNombre), */
         check('ficha')
         .optional()
         .custom(helperAprendiz.validarFicha),
@@ -60,20 +62,15 @@ router.put('/actualizaraprendiz/:id',
         check('email')
         .optional()
         .custom(helperAprendiz.validarEmail),
-        check('password')
+        check('tipo_programa')
         .optional()
-        .custom(helperAprendiz.validarPassword),
+        .custom(helperAprendiz.validartipo_programa),
         validarCampos
     ],
     ControllerAprendiz.actualizarAprendiz
 )
-router.delete('/eliminaraprendiz/:id',
+router.delete('/eliminaraprendiz/:nombre',
     validarJWT,
-    [
-        check('id')
-        .isMongoId().withMessage('El ID no es válido'),
-        validarCampos
-    ],
     ControllerAprendiz.eliminarAprendiz 
 )
 export default router;
