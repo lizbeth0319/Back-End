@@ -17,7 +17,7 @@ const helperAprendiz = {
             throw Error(`La ficha es obligatoria`);
         }
         if (ficha.length < 7) { //26 29 16 0
-            throw new Error(`La ficha debe tener al menos 6 caracteres`);
+            throw new Error(`La ficha debe tener al menos 7 caracteres`);
         }
     },
     validarPrograma: async (programa) => {

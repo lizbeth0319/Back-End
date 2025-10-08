@@ -7,10 +7,7 @@ import { validarJWT } from "../middleware/validar-jwt.js";
 
 const router = Router();
 
-router.put('/actualizarestadocorreo/:nombre',
-    validarJWT,
-    UserController.actualizarestadocorreo
-);
+
 
 //router.get('/porteria/permisos/aprobados')
 export default router;

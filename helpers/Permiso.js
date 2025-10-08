@@ -83,7 +83,15 @@ const Helperpermiso = {
         }
         return true;
     },
-    //buscar para vaidae fecha y hora 
+    traercorreoinstructor:async (intructor)=>{
+        const datosintructor= await User.find({nombre:String(intructor)})
+        if(!datosintructor){
+            throw new Error("no hay un correo para este instructor");
+            
+        }
+        console.log(datosintructor.email)
+        return datosintructor.email
+    }
 };
 
 export default Helperpermiso;

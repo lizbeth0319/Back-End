@@ -9,17 +9,17 @@ const helpersAuthentication = {
 
     validarEmail: async (email) => {
         if (!email) throw new Error('El email es requerido');
-        // ... lógica de validación de formato ...
-
-        console.log('1. Intentando buscar email:', email); // 👈 Primer log
-
-        const existeEmail = await User.findOne({ email }); // LA LÍNEA BLOQUEANTE
-
-        console.log('2. Consulta a BD finalizada.'); // 👈 Segundo log (Si no se ve, la consulta se colgó)
-
-        if (existeEmail) {
+        
+        const existeEmail = await User.findOne({ email }); 
+        console.log('validacion email registre '); 
+        
+        if(rol ==='aprendiz' && existeEmail){
+            return true;
+        }
+        else if (existeEmail) {
             throw new Error(`El correo ${email} ya está registrado`);
         }
+        
     },
     validarNombre: (name) => {
         if (!name) throw new Error('El nombre es requerido');

@@ -21,7 +21,6 @@ const AuthenticationController = {
             console.log('entro');
             const { nombre, password, email, rol } = req.body;
             const archivoImagen = req.file;
-            let estado_correo= true;
             // ----------------validacion imagen------------
             if (rol === 'instructor' && !archivoImagen) {
                 return res.status(400).json({
@@ -44,28 +43,24 @@ const AuthenticationController = {
             const password_hash = bcryptjs.hashSync(password, salt);
 
             //-------estado
-            if(rol === 'instructor'){
-                estado_correo= false
-            }
 
-
-            newUser = new User({ // 💡 Usamos la variable definida al inicio del try
+            newUser = new User({ 
                 nombre,
                 email,
                 password_hash,
                 rol,
                 firma_url, // Será la URL de Cloudinary o null
                 cloudinary_id, // Será el ID público o null
-                estado_correo:estado_correo
+                
             });
             const savedUser = await newUser.save();
 
             const userResponse = {
                 id: savedUser._id,
-                nombre: savedUser.nombre, // Asegúrate de usar 'nombre' o 'name' según tu modelo
+                nombre: savedUser.nombre, 
                 email: savedUser.email,
                 rol: savedUser.rol,
-                firma_url: savedUser.firma_url // Incluimos la URL en la respuesta
+                firma_url: savedUser.firma_url 
             };
             console.log('entro');
             res.status(201).json({

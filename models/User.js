@@ -27,10 +27,6 @@ const UserSchema = new Schema({
     cloudinary_id: {
         type: String,
         default: null,
-    },
-    estado_correo:{
-        type:Boolean,
-        default:true
     }
 });
 const User = model('User', UserSchema);

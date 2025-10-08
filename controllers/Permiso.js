@@ -1,13 +1,15 @@
 import Permiso from "../models/Permiso.js";
 import Aprendiz from "../models/Aprendiz.js";
+import { sendPermisoEmail } from "./Estado.js";
+import helperAprendiz from "../helpers/Aprendiz.js";
+import Helperpermiso from "../helpers/Permiso.js";
 const Permisocontroller = {
     crearPermiso: async (req, res) => {
         console.log('entrada datos  fuc crear');
 
         try {
             const {
-                aprendiz,//nombre
-                //traer datos aprendiz ?
+                aprendiz,
                 nombreenfermera,
                 motivo,
                 intructor,
@@ -26,12 +28,25 @@ const Permisocontroller = {
                 hora
             });
             const savePermiso = await newPermiso.save();
-
+            //---------------- envio correo autorizacion
+            const permisoId = savePermiso._id.toString();
+            //--- tarer datos para el correo_----
+            const instructorEmail= Helperpermiso.traercorreoinstructor(savePermiso.id_intructor)
+            const emailData = {
+                instructorEmail: instructorEmail, 
+                instructorName: savePermiso.id_intructor,   
+                aprendizName:savePermiso.id_aprendiz,       
+                motivo: motivo,
+                permisoId: permisoId       // ID del permiso guardado
+            };
+            const emailInfo = await sendPermisoEmail(emailData);// envio correo
+            //-------------------
             res.status(201).json({
                 succes: true,
                 message: 'permiso creado listo para autorizar',
                 data: savePermiso
             });
+
         } catch (error) {
             console.error('Error en createPermiso:', error);
             res.status(500).json({
@@ -159,7 +174,19 @@ const Permisocontroller = {
             res.status(500).json({ msg: 'Error interno del servidor durante la búsqueda.' });
         }
     },
-
+    permisoAprobado: async (req, res) => {
+        try {
+            const Permisos = await Permiso.find({ estado: "aprobado" })
+            res.status(200).json({
+                success: true,
+                msg: "Búsqueda de Permisos aprobados realizada exitosamente",
+                data: Permisos
+            });
+        } catch (error) {
+            console.error('Error en la búsqueda de permisos aprobados:', error);
+            res.status(500).json({ msg: 'Error interno del servidor durante la búsqueda.' });
+        }
+    },
     eliminarpermiso: async (req, res) => {
         try {
             const { id } = req.params;

@@ -10,7 +10,7 @@ const router = Router();
 router.post('/crearaprendiz',
     validarJWT,
     [
-        //nombre, ficha, programa, email, password
+        //nombre, ficha, programa, email, tipo programa
         check('nombre').custom(helperAprendiz.validateNombre),
         check('ficha').custom(helperAprendiz.validarFicha),
         check('programa').custom(helperAprendiz.validarPrograma),

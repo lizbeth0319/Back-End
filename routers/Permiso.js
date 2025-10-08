@@ -9,7 +9,7 @@ const router = Router();
 
 
 /* const {
-                aprendiz,enfermera,motivo,intructor,competencia,hora} = req.body */
+    aprendiz,enfermera,motivo,intructor,competencia,hora} = req.body */
 router.post('/permiso',
     validarJWT,
     [
@@ -59,6 +59,11 @@ router.get('/aprendiz/busqeda/search',
     Permisocontroller.buscarpermisoAprediz
 )
 
+///api/porteria/permisos/aprobados
+router.get('/porteria/permiso/aprobados',
+    validarJWT,
+    Permisocontroller.permisoAprobado
+);
 router.delete('/:id', 
     validarJWT,
     Permisocontroller.eliminarpermiso);

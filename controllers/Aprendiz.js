@@ -51,7 +51,7 @@ const ControllerAprendiz = {
     },
     obtenerAprendices: async (req, res) => {
         try {
-            const aprendices = await Aprendiz.find(); // Excluir el campo password_hash
+            const aprendices = await Aprendiz.find(); 
             res.status(200).json({
                 success: true,
                 msg: "Lista de aprendices obtenida exitosamente",
@@ -93,7 +93,7 @@ const ControllerAprendiz = {
     },
     obtenerAprendicesSearch: async (req, res) => {
         try {
-            const { query } = req.query; //pepito perrez =PEPITO PERES
+            const { query } = req.query; 
             if (!query) {
                 return res.status(400).json({
                     success: false,
