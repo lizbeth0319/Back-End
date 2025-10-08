@@ -29,7 +29,7 @@ const Permisocontroller = {
             });
             const savePermiso = await newPermiso.save();
             //---------------- envio correo autorizacion
-            const permisoId = savePermiso._id.toString();
+            const permisoId = savePermiso._id.toString(); 
             //--- tarer datos para el correo_----
             const instructorEmail= Helperpermiso.traercorreoinstructor(savePermiso.id_intructor)
             const emailData = {
@@ -39,7 +39,12 @@ const Permisocontroller = {
                 motivo: motivo,
                 permisoId: permisoId       // ID del permiso guardado
             };
-            const emailInfo = await sendPermisoEmail(emailData);// envio correo
+            const { info, tokens } = await sendPermisoEmail(emailData);
+            await Permiso.findByIdAndUpdate(permisoId, {
+                token_aprobacion: tokens.aprobacion,
+                token_rechazo: tokens.rechazo,
+                // Opcional: registrar quién lo envió o la fecha de envío
+            });
             //-------------------
             res.status(201).json({
                 succes: true,

@@ -1,6 +1,6 @@
-import Permiso from "../models/Permiso";
-import User from "../models/User";
-import Aprendiz from "../models/Aprendiz";
+import Permiso from "../models/Permiso.js";
+import User from "../models/User.js";
+import Aprendiz from "../models/Aprendiz.js";
 import nodemailer from "nodemailer";
 import "dotenv/config";
 function generateSecureToken() {
@@ -8,20 +8,25 @@ function generateSecureToken() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true, 
 
     auth: {
-        user: process.env.CORREO_USER, // Reemplazar con process.env.CORREO_USER
-        pass: process.env.PASS_USER, // Reemplazar con process.env.PASS_USER (App Password de Google)
+        // Asegúrate de que estas variables de entorno estén configuradas
+        user: process.env.CORREO_USER,
+        pass: process.env.PASS_USER,
     },
 });
 
+/**
+ * Función para enviar el correo de solicitud de permiso.
+ * * @param {object} data Los datos necesarios para el correo.
+ * @returns {Promise<{info: object, tokens: {aprobacion: string, rechazo: string}}>} La info de Nodemailer y los tokens generados.
+ */
 export async function sendPermisoEmail(data) {
-    // Desestructurar datos de entrada:
+    // Desestructurar datos de entrada
     const { 
         instructorEmail, 
         instructorName, 
@@ -34,27 +39,28 @@ export async function sendPermisoEmail(data) {
         throw new Error("Datos requeridos incompletos: instructorEmail o permisoId.");
     }
     
+    // 2. Generar los tokens únicos
     const tokenAprobacion = generateSecureToken();
     const tokenRechazo = generateSecureToken();
 
+    // La URL base para el entorno de producción
     const BASE_URL = "https://back-end-proyect.onrender.com"; 
 
     // 3. Crear los enlaces de acción
-    // NOTA: Asegúrate de que tus rutas de aprobación/rechazo manejen el token y el ID del permiso.
-    // Una URL más completa podría ser: 
-    // const linkAprobar = `${BASE_URL}/api/permisos/aprobar/${permisoId}/${tokenAprobacion}`;
-    const linkAprobar = `${BASE_URL}/api/permisos/aprobar/${tokenAprobacion}`;
-    const linkRechazar = `${BASE_URL}/api/permisos/rechazar/${tokenRechazo}`;
+    const linkAprobar = `${BASE_URL}/api/permisos/aprobar/${permisoId}/${tokenAprobacion}`;
+    const linkRechazar = `${BASE_URL}/api/permisos/rechazar/${permisoId}/${tokenRechazo}`;
 
+    // *RECOMENDACIÓN*: Incluir el permisoId en la URL de acción es una buena práctica
+    // para simplificar la búsqueda en la base de datos al validar el token.
 
     const htmlContent = ` 
         <html>
             <body>
                 <h2>🔔 Solicitud de Permiso Pendiente (ID: ${permisoId})</h2>
-                <p>Estimado(a) Instructor(a) **${instructorName || 'designado'}**,</p>
+                <p>Estimado(a) Instructor(a) **${instructorName || 'designado'}**:</p>
                 <p>La enfermera ha generado una solicitud de permiso de salida para el Aprendiz **${aprendizName}**.</p>
                 <p><strong>Motivo:</strong> ${motivo || 'No especificado'}</p>
-                <p>Por favor, revise y proceda a autorizar o denegar la solicitud haciendo clic en una de las opciones a continuación. Esta acción actualizará el estado del permiso automáticamente.</p>
+                <p>Por favor, proceda a autorizar o denegar la solicitud:</p>
 
                 <div style="margin-top: 30px;">
                     <a href="${linkAprobar}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; margin-right: 15px;">
@@ -64,7 +70,7 @@ export async function sendPermisoEmail(data) {
                         ❌ RECHAZAR PERMISO
                     </a>
                 </div>
-                <p style="margin-top: 50px; font-size: 0.8em; color: #777;">Si el enlace no funciona, por favor, copie y pegue el link de aprobación en su navegador: ${linkAprobar}</p>
+                <p style="margin-top: 50px; font-size: 0.8em; color: #777;">Si el enlace no funciona, copie y pegue el link de aprobación en su navegador: ${linkAprobar}</p>
             </body>
         </html>
     `;
@@ -79,29 +85,21 @@ export async function sendPermisoEmail(data) {
             html: htmlContent, 
         }); 
 
-        // 💡 NOTA: Aquí iría la lógica para **GUARDAR los tokens en la base de datos**
-        // junto con el permisoId, tokenAprobacion, y tokenRechazo. Esto es CRUCIAL para
-        // verificar la autenticidad de la acción al hacer clic en los enlaces.
-        console.log(`Tokens generados para Permiso ${permisoId}: Aprobación: ${tokenAprobacion}, Rechazo: ${tokenRechazo}`);
-
-        return info; // Retornamos la info para manejar la respuesta en el controlador
+        console.log(`Correo enviado. Message ID: ${info.messageId}`);
+        // Retorna la info y los tokens para que el controlador los guarde en la BD
+        return { 
+            info: info, 
+            tokens: { 
+                aprobacion: tokenAprobacion, 
+                rechazo: tokenRechazo 
+            } 
+        };
     } catch (error) {
         console.error("Error al enviar correo con Nodemailer:", error);
-        // Relanzar el error para que sea capturado por el bloque try-catch del controlador
         throw new Error("Fallo al enviar la notificación por correo."); 
     }
 }
 
-
-const controllersEstadoPermiso={
-    aprobarpermiso:async (req, res)=>{
-        try {
-            
-        } catch (error) {
-            
-        }
-    }
-
-};
-export default controllersEstadoPermiso;
-export { sendPermisoEmail };
+// Exportamos solo la función de envío
+// NOTA: El objeto controllersEstadoPermiso y las importaciones de modelos 
+// deben ir en el archivo del controlador.
