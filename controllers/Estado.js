@@ -37,7 +37,7 @@ export async function sendPermisoEmail(data) {
     // const tokenAprobacion = generateSecureToken();
     // const tokenRechazo = generateSecureToken();
 
-    const BASE_URL ="http://localhost:3000";
+    const BASE_URL ="https://back-end-proyect.onrender.com";
     
     // 💡 ENLACES CORREGIDOS: Solo usan el ID del permiso
     const linkAprobar = `${BASE_URL}/api/permiso/permisos/aprobar/${permisoId}`;
