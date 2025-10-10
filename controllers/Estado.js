@@ -6,13 +6,15 @@ import "dotenv/config";
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587, 
-    secure: false, // Ahora es false para usar STARTTLS
-
+    port: 587, // O 465, según lo que decidas probar
+    secure: false, // O true si es 465
     auth: {
         user: process.env.CORREO_USER,
         pass: process.env.PASS_USER,
     },
+    // Añadir un timeout explícito de 30 segundos
+    // Esto no soluciona la causa, pero puede ayudar a entornos lentos
+    timeout: 30000 
 });
 /* function generateSecureToken() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
