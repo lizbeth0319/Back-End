@@ -6,12 +6,15 @@ import "dotenv/config";
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465, 
-    secure: true, // Debe ser TRUE para el puerto 465
+    port: 465,         // Puerto para SSL/TLS estricto
+    secure: true,      // Debe ser TRUE para el puerto 465
+
     auth: {
+        // Nodemailer leerá estas variables desde Render (process.env)
         user: process.env.CORREO_USER,
-        pass: process.env.PASS_USER,
+        pass: process.env.PASS_USER, 
     },
+    // Añadir un timeout más largo para evitar desconexiones en la nube
     timeout: 30000 
 });
 /* function generateSecureToken() {
@@ -75,13 +78,12 @@ export async function sendPermisoEmail(data) {
         }); 
 
         console.log(`Correo enviado. Message ID: ${info.messageId}`);
-        // 💡 RETORNO CORREGIDO: Ya no retorna tokens, solo info.
-        return { info: info, tokens: { aprobacion: '', rechazo: '' } }; 
+        return { info };
     } catch (error) {
         console.error("Error al enviar correo con Nodemailer:", error);
-        throw new Error("Fallo al enviar la notificación por correo."); 
+        throw new Error("Fallo al enviar la notificación por correo.", error); 
     }
 }
 // Exportamos solo la función de envío
 // NOTA: El objeto controllersEstadoPermiso y las importaciones de modelos 
-// deben ir en el archivo del controlador.
+// deben ir en el archivo del controlador. 
