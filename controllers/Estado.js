@@ -33,7 +33,7 @@ export async function sendPermisoEmail(data) {
         throw new Error("Datos requeridos incompletos: instructorEmail o permisoId.");
     }
 
-    const BASE_URL ="http://localhost:3000"; 
+    const BASE_URL =process.env.BASEURL; 
     
     // 💡 ENLACES CORREGIDOS: Solo usan el ID del permiso
     const linkAprobar = `${BASE_URL}/api/permiso/permisos/aprobar/${permisoId}`;
