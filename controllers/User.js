@@ -2,8 +2,34 @@ import User from '../models/User.js'; // Asegúrate de tener la ruta correcta
 
 const UserController = {
 
-    actualizarestadocorreo: async (req, res) => {
+    listarUsuariosPorRol: async (req, res) => {
         try {
+            const { rol } = req.params;
+            const usuarios = await User.find({ rol: rol.toLowerCase() }, '-password_hash'); 
+            if (!usuarios || usuarios.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    msg: `No se encontraron usuarios con el rol '${rol}'.`
+                });
+            }
+
+            res.status(200).json({
+                success: true,
+                msg: `Listado de ${rol}s encontrado exitosamente.`,
+                count: usuarios.length,
+                data: usuarios
+            });
+
+        } catch (error) {
+            console.error('Error al listar usuarios por rol:', error);
+            res.status(500).json({
+                success: false,
+                msg: 'Error interno del servidor al procesar la solicitud.'
+            });
+        }
+    }
+    /*   actualizarestadocorreo: async (req, res) => {
+        try { 
             const { nombre } = req.params;
 
             // 🛑 CORRECCIÓN: Usar findOneAndUpdate con el criterio de búsqueda 'nombre'
@@ -38,7 +64,7 @@ const UserController = {
             msg: 'Error interno del servidor.' 
         });
     }
-}
+    } */
 };
 
 export default UserController;

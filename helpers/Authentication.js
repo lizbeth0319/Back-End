@@ -60,7 +60,10 @@ const helpersAuthentication = {
         const validaPassword = await bcrypt.compare(password, usuario.password_hash);
 
         if (!validaPassword) throw new Error('Credenciales inválidas');
+        const datos={
 
+        }
+        console.log(usuario)
         return usuario;
     },
     validacionimagen: async (Image) => {

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { validarCampos } from "../middleware/validar-campo.js";
 import ControllerAprendiz from "../controllers/Aprendiz.js";
 import helperAprendiz from "../helpers/Aprendiz.js";
-import { check,query ,validationResult } from "express-validator"; 
+import { check,query ,param,validationResult } from "express-validator"; 
 import { validarJWT } from "../middleware/validar-jwt.js";
 //import validarRol from "../middleware/validar-rol.js";
 const router = Router();
@@ -47,12 +47,13 @@ router.get('/aprendices/search',
     ],
     ControllerAprendiz.obtenerAprendicesSearch
 );
-router.put('/actualizaraprendiz/:nombre',
+router.put('/actualizaraprendiz/:id',
     validarJWT,    
     [    
-        /* check('nombre')
+        param('id', 'El ID es obligatorio y debe ser un ID de Mongo válido.').isMongoId().trim().escape(),
+        check('nombre')
         .optional()
-        .custom(helperAprendiz.validateNombre), */
+        .custom(helperAprendiz.validateNombre), 
         check('ficha')
         .optional()
         .custom(helperAprendiz.validarFicha),

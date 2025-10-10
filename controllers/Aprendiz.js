@@ -51,7 +51,7 @@ const ControllerAprendiz = {
     },
     obtenerAprendices: async (req, res) => {
         try {
-            const aprendices = await Aprendiz.find(); 
+            const aprendices = await Aprendiz.find();
             res.status(200).json({
                 success: true,
                 msg: "Lista de aprendices obtenida exitosamente",
@@ -93,7 +93,7 @@ const ControllerAprendiz = {
     },
     obtenerAprendicesSearch: async (req, res) => {
         try {
-            const { query } = req.query; 
+            const { query } = req.query;
             if (!query) {
                 return res.status(400).json({
                     success: false,
@@ -133,27 +133,29 @@ const ControllerAprendiz = {
     },
     actualizarAprendiz: async (req, res) => {
         try {
-            const { nombre: nombreIdentificador } = req.params;
+            // 1. Desestructurar el ID de los parámetros de la URL
+            const { id } = req.params;
             const updateData = req.body;
-            console.log("138", nombreIdentificador);
+            console.log("ID del Aprendiz a actualizar:", id);
 
-            // 3. Usar findOneAndUpdate para una sola llamada a la base de datos
-            // NOTA: Si el campo 'email' está en el cuerpo y es un índice único, Mongoose
-            // automáticamente lanzará el error 11000 si hay duplicado.
-            const updatedAprendiz = await Aprendiz.findOneAndUpdate(
-                { nombre: nombreIdentificador }, // Criterio de búsqueda
-                updateData,                       // Datos a actualizar
-                { new: true }                     // Devuelve el documento actualizado
+            // 2. Usar findByIdAndUpdate para una sola llamada a la base de datos
+            // Usamos { runValidators: true } para que Mongoose valide los datos del body (ej. formato de email, unicidad).
+            const updatedAprendiz = await Aprendiz.findByIdAndUpdate(
+                id,              // Criterio de búsqueda: el _id
+                updateData,      // Datos a actualizar
+                { new: true, runValidators: true } // new: true devuelve el documento actualizado
             );
 
             if (!updatedAprendiz) {
                 return res.status(404).json({
                     success: false,
-                    msg: "Aprendiz no encontrado."
+                    msg: "Aprendiz no encontrado por ID." // Mensaje de error ajustado
                 });
             }
 
+            // 3. Preparar la respuesta con los datos actualizados
             const datosAprendiz = {
+                id: updatedAprendiz._id, // Incluir el ID en la respuesta es útil
                 nombre: updatedAprendiz.nombre,
                 ficha: updatedAprendiz.ficha,
                 programa: updatedAprendiz.programa,
@@ -164,14 +166,23 @@ const ControllerAprendiz = {
             res.status(200).json({
                 success: true,
                 msg: "Aprendiz actualizado exitosamente",
-                data: datosAprendiz 
+                data: datosAprendiz
             });
 
         } catch (error) {
+            // Manejo de error 11000 (índice único)
             if (error.code === 11000) {
                 return res.status(409).json({
                     success: false,
-                    message: 'Error: El email o la ficha que intentas asignar ya están registrados.'
+                    message: 'Error de unicidad: El email o la ficha que intentas asignar ya están registrados.'
+                });
+            }
+
+            // Manejo de error de formato de ID no válido (ej: 'abc' en lugar de un ObjectId)
+            if (error.name === 'CastError' && error.kind === 'ObjectId') {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'ID de aprendiz proporcionado no es un formato válido.'
                 });
             }
 

@@ -85,11 +85,11 @@ const AuthenticationController = {
             const { email, password } = req.body;
 
             const usuario = await helpersAuthentication.verificarCredenciales(email, password);
-
+            console.log(usuario)
             const token = await generarJWT(usuario.email);
             res.json({
                 usuario: {
-                    nombre: usuario.name,
+                    nombre: usuario.nombre,
                     email: usuario.email,
                     rol: usuario.rol
                 },
