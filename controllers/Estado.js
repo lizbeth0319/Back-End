@@ -6,8 +6,8 @@ import "dotenv/config";
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true, 
+    port: 587, 
+    secure: false, // Ahora es false para usar STARTTLS
 
     auth: {
         user: process.env.CORREO_USER,
@@ -32,12 +32,8 @@ export async function sendPermisoEmail(data) {
     if (!instructorEmail || !permisoId) {
         throw new Error("Datos requeridos incompletos: instructorEmail o permisoId.");
     }
-    
-    // 💡 YA NO SE GENERAN TOKENS
-    // const tokenAprobacion = generateSecureToken();
-    // const tokenRechazo = generateSecureToken();
 
-    const BASE_URL ="https://back-end-proyect.onrender.com";
+    const BASE_URL ="http://localhost:3000"; 
     
     // 💡 ENLACES CORREGIDOS: Solo usan el ID del permiso
     const linkAprobar = `${BASE_URL}/api/permiso/permisos/aprobar/${permisoId}`;

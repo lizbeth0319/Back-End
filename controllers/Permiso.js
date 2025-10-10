@@ -86,10 +86,172 @@ const Permisocontroller = {
                                              <p>El permiso ID **${id}** ya fue procesado o no se encuentra en estado pendiente.</p>`);
             }
 
-            const mensajeHTML = `<h1>✅ Permiso ${accion}</h1>
-                                <p>El permiso ID: ${updatedPermiso._id} del Aprendiz ${updatedPermiso.id_aprendiz} ha sido **${accion.toUpperCase()}** con éxito.</p>
-                                <p>Estado final: <strong>${updatedPermiso.estado.toUpperCase()}</strong></p>`;
-
+            const mensajeHTML = `
+                    <!DOCTYPE html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+                        body {
+                            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                            padding: 20px;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 0 auto;
+                            background: white;
+                            border-radius: 16px;
+                            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                            overflow: hidden;
+                        }
+                        .header {
+                            background: linear-gradient(135deg, #39a900 0%, #2d8600 100%);
+                            padding: 30px;
+                            text-align: center;
+                            color: white;
+                        }
+                        .header h1 {
+                            font-size: 28px;
+                            font-weight: 700;
+                            margin-bottom: 10px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 10px;
+                        }
+                        .icon {
+                            font-size: 40px;
+                            animation: bounce 1s ease infinite;
+                        }
+                        @keyframes bounce {
+                            0%, 100% { transform: translateY(0); }
+                            50% { transform: translateY(-10px); }
+                        }
+                        .content {
+                            padding: 40px 30px;
+                        }
+                        .info-box {
+                            background: #f8f9fa;
+                            border-left: 4px solid #39a900;
+                            border-radius: 8px;
+                            padding: 20px;
+                            margin: 20px 0;
+                        }
+                        .info-row {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px 0;
+                            border-bottom: 1px solid #e9ecef;
+                        }
+                        .info-row:last-child {
+                            border-bottom: none;
+                        }
+                        .label {
+                            color: #6c757d;
+                            font-weight: 500;
+                            font-size: 14px;
+                        }
+                        .value {
+                            color: #212529;
+                            font-weight: 600;
+                            font-size: 16px;
+                        }
+                        .estado-badge {
+                            display: inline-block;
+                            padding: 8px 16px;
+                            border-radius: 20px;
+                            font-weight: 600;
+                            font-size: 14px;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+                        .estado-aprobado {
+                            background: #d4edda;
+                            color: #155724;
+                            border: 1px solid #c3e6cb;
+                        }
+                        .estado-rechazado {
+                            background: #f8d7da;
+                            color: #721c24;
+                            border: 1px solid #f5c6cb;
+                        }
+                        .estado-pendiente {
+                            background: #fff3cd;
+                            color: #856404;
+                            border: 1px solid #ffeaa7;
+                        }
+                        .mensaje-principal {
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: #495057;
+                            margin: 20px 0;
+                            text-align: center;
+                        }
+                        .footer {
+                            background: #f8f9fa;
+                            padding: 20px;
+                            text-align: center;
+                            border-top: 1px solid #e9ecef;
+                        }
+                        .footer p {
+                            color: #6c757d;
+                            font-size: 13px;
+                            margin: 5px 0;
+                        }
+                        .highlight {
+                            color: #39a900;
+                            font-weight: 700;
+                        }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                        <div class="header">
+                            <h1>
+                            <span class="icon">✅</span>
+                            Permiso ${accion}
+                            </h1>
+                        </div>
+                        
+                        <div class="content">
+                            <p class="mensaje-principal">
+                            El permiso ha sido <span class="highlight">${accion.toUpperCase()}</span> con éxito.
+                            </p>
+                            
+                            <div class="info-box">
+                            <div class="info-row">
+                                <span class="label">ID del Permiso:</span>
+                                <span class="value">${updatedPermiso._id}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="label">Aprendiz:</span>
+                                <span class="value">${updatedPermiso.id_aprendiz}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="label">Estado Final:</span>
+                                <span class="estado-badge estado-${updatedPermiso.estado.toLowerCase()}">${updatedPermiso.estado.toUpperCase()}</span>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        <div class="footer">
+                            <p>Sistema de Gestión de Permisos - SENA</p>
+                            <p>Este es un mensaje automático, por favor no responder.</p>
+                        </div>
+                        </div>
+                    </body>
+                    </html>
+                    `;
             res.status(200).send(mensajeHTML);
 
         } catch (error) {
