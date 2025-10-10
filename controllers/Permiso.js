@@ -5,7 +5,7 @@ import helperAprendiz from "../helpers/Aprendiz.js";
 import Helperpermiso from "../helpers/Permiso.js";
 const Permisocontroller = {
     crearPermiso: async (req, res) => {
-        console.log('entrada datos  fuc crear');
+        console.log('entrada datos fuc crear');
 
         try {
             const {
@@ -55,7 +55,7 @@ const Permisocontroller = {
             console.error('Error en createPermiso:', error);
             res.status(500).json({
                 success: false,
-                message: 'Error al crear permiso'
+                message: error.message || 'Error al crear permiso'
             });
         }
     },
@@ -86,7 +86,6 @@ const Permisocontroller = {
                                              <p>El permiso ID **${id}** ya fue procesado o no se encuentra en estado pendiente.</p>`);
             }
 
-            // 2. 💡 Respuesta HTML simple para el navegador (MÁS FÁCIL DE USAR DESDE EL CORREO)
             const mensajeHTML = `<h1>✅ Permiso ${accion}</h1>
                                 <p>El permiso ID: ${updatedPermiso._id} del Aprendiz ${updatedPermiso.id_aprendiz} ha sido **${accion.toUpperCase()}** con éxito.</p>
                                 <p>Estado final: <strong>${updatedPermiso.estado.toUpperCase()}</strong></p>`;
