@@ -6,14 +6,12 @@ import "dotenv/config";
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587, // O 465, según lo que decidas probar
-    secure: false, // O true si es 465
+    port: 465, 
+    secure: true, // Debe ser TRUE para el puerto 465
     auth: {
         user: process.env.CORREO_USER,
         pass: process.env.PASS_USER,
     },
-    // Añadir un timeout explícito de 30 segundos
-    // Esto no soluciona la causa, pero puede ayudar a entornos lentos
     timeout: 30000 
 });
 /* function generateSecureToken() {
