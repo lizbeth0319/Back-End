@@ -10,12 +10,12 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 //
 router.post('/auth/register',
-    upload.single('firma'),//nombre docn el que tien que entrar
+    upload.single('firma'),
     [
-        check('email').custom(helpersAuthentication.validarEmail),
+        check('rol').custom(helpersAuthentication.validarRol),
         check('nombre').custom(helpersAuthentication.validarNombre),
         check('password').custom(helpersAuthentication.validarPassword),
-        check('rol').custom(helpersAuthentication.validarRol),
+        check('email').custom(helpersAuthentication.validarEmail),
         validarCampos
     ], 
     AuthenticationController.create);

@@ -22,6 +22,11 @@ router.post('/permiso',
     ],
     Permisocontroller.crearPermiso
 )
+// La URL esperada ahora es: /api/permisos/aprobar/:id
+router.get('/permisos/aprobar/:id', Permisocontroller.aprobarPermiso);
+
+// 💡 RUTA CORREGIDA: Cambiado de PUT a GET para funcionar con el clic del correo.
+router.get('/permisos/rechazar/:id', Permisocontroller.rechazarPermiso);
 
 router.get('/listadopermisos',
     validarJWT,
@@ -68,6 +73,7 @@ router.delete('/:id',
     validarJWT,
     Permisocontroller.eliminarpermiso);
 
+router.delete('/permisos/todos', Permisocontroller.deleteAll);
 //router.get('/porteria/permisos/aprobados')
 //•	GET /api/instructores/{id}/permisos/pendientes: 
 //correo

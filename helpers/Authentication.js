@@ -3,32 +3,30 @@ import bcrypt from 'bcryptjs';
 
 import { cloudinary } from '../config/cloudinary.js';
 
-
 const helpersAuthentication = {
-    // helpers/Authentication.js
-
-    validarEmail: async (email) => {
+        validarEmail: async (email, { req }) => {
+        const rol = req.body.rol; 
         if (!email) throw new Error('El email es requerido');
-        
-        const existeEmail = await User.findOne({ email }); 
-        console.log('validacion email registre '); 
-        
-        if(rol ==='aprendiz' && existeEmail){
+
+        const existeEmail = await User.findOne({ email });
+        console.log('validacion email registre ');
+
+        if (rol === 'aprendiz' && existeEmail) {
             return true;
         }
         else if (existeEmail) {
             throw new Error(`El correo ${email} ya está registrado`);
         }
-        
+        return true;
     },
-    validarNombre: (name) => {
+    validarNombre: async (name) => {
         if (!name) throw new Error('El nombre es requerido');
         if (name.length < 2 || name.length > 30) {
             throw new Error('El nombre debe tener entre 2 y 30 caracteres');
         }
         return true;
     },
-    validarPassword: (password) => {
+    validarPassword: async (password) => {
         if (!password) throw new Error('La contraseña es requerida');
         if (password.length < 8) throw new Error('La contraseña debe tener mínimo 8 caracteres');
         return true;
@@ -44,16 +42,15 @@ const helpersAuthentication = {
         if (!rolesValidos.includes(rolLimpio)) {
             throw new Error(`El rol '${rol}' no es válido. Los roles permitidos son: ${rolesValidos.join(', ')}`);
         }
-
     },
+
     validarEmailLogin: async (email) => {
         if (!email) throw new Error('El email es requerido');
-        if (!/^\w+([.-]?\w+)@\w+([.-]?\w+)(\.\w{2,3})+$/.test(email)) {
-            throw new Error('El correo debe ser @gmail.com');
+        if (!/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(email)) {
+            throw new Error('El correo debe ser /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/');
         }
         return true;
     },
-    // helpers/Authentication.js
 
     verificarCredenciales: async (email, password) => {
         const usuario = await User.findOne({ email });
@@ -74,7 +71,7 @@ const helpersAuthentication = {
             });
         }
     },
-    uploadToCloudinary: (fileBuffer, folderName) => {
+    uploadToCloudinary: async (fileBuffer, folderName) => {
         return new Promise((resolve, reject) => {
             const streamUpload = cloudinary.uploader.upload_stream(
                 { folder: folderName, resource_type: 'image' }, // Cambié 'firma' por 'image' para ser más estándar, aunque 'firma' también funciona.

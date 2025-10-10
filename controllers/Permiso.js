@@ -5,17 +5,12 @@ import helperAprendiz from "../helpers/Aprendiz.js";
 import Helperpermiso from "../helpers/Permiso.js";
 const Permisocontroller = {
     crearPermiso: async (req, res) => {
-        console.log('entrada datos  fuc crear');
+        console.log('entrada datos  fuc crear');
 
         try {
             const {
-                aprendiz,
-                nombreenfermera,
-                motivo,
-                intructor,
-                nombrecompetencia,
-                hora
-            } = req.body
+                aprendiz, nombreenfermera, motivo, intructor, nombrecompetencia, hora
+            } = req.body;
             const fechaActual = new Date();
             const newPermiso = new Permiso({
                 id_aprendiz: aprendiz,
@@ -29,26 +24,30 @@ const Permisocontroller = {
             });
             const savePermiso = await newPermiso.save();
             //---------------- envio correo autorizacion
-            const permisoId = savePermiso._id.toString(); 
+            const permisoId = savePermiso._id.toString();
             //--- tarer datos para el correo_----
-            const instructorEmail= Helperpermiso.traercorreoinstructor(savePermiso.id_intructor)
+            const instructorEmail = await Helperpermiso.traercorreoinstructor(savePermiso.id_intructor);
+            if (!instructorEmail) {
+                throw new Error("No se pudo obtener el correo del instructor.");
+            }
             const emailData = {
-                instructorEmail: instructorEmail, 
-                instructorName: savePermiso.id_intructor,   
-                aprendizName:savePermiso.id_aprendiz,       
+                instructorEmail: instructorEmail,
+                instructorName: savePermiso.id_intructor,
+                aprendizName: savePermiso.id_aprendiz,
                 motivo: motivo,
-                permisoId: permisoId       // ID del permiso guardado
+                permisoId: permisoId // ID del permiso guardado
             };
-            const { info, tokens } = await sendPermisoEmail(emailData);
-            await Permiso.findByIdAndUpdate(permisoId, {
-                token_aprobacion: tokens.aprobacion,
-                token_rechazo: tokens.rechazo,
-                // Opcional: registrar quién lo envió o la fecha de envío
-            });
+
+            // 💡 NOTA: Aunque sendPermisoEmail retorna tokens, AHORA NO SE USARÁN para la aprobación/rechazo
+            const { info } = await sendPermisoEmail(emailData);
+
+            // 💡 SE BORRA la lógica de guardar tokens si no se van a usar para la validación de la URL.
+            // Si quieres guardar la info del correo (info.messageId), puedes hacerlo aquí.
+
             //-------------------
             res.status(201).json({
                 succes: true,
-                message: 'permiso creado listo para autorizar',
+                message: 'Permiso creado y correo de autorización enviado.',
                 data: savePermiso
             });
 
@@ -60,6 +59,50 @@ const Permisocontroller = {
             });
         }
     },
+
+    handleAprobarRechazar: async (req, res, estado) => {
+        const { id } = req.params;
+        const accion = estado === 'aprobado' ? 'Aprobado' : 'Rechazado';
+
+        try {
+            // 1. Usar findByIdAndUpdate para actualizar el estado directamente
+            const updatedPermiso = await Permiso.findOneAndUpdate(
+                {
+                    _id: id,
+                    estado: 'pendiente' // Solo actualiza si aún está pendiente
+                },
+                {
+                    estado: estado
+                },
+                {
+                    new: true,
+                    runValidators: true
+                }
+            );
+
+            if (!updatedPermiso) {
+                // Si no se encuentra, es porque el ID es inválido o el permiso ya fue procesado
+                return res.status(404).send(`<h1>🚫 Error al Procesar</h1>
+                                             <p>El permiso ID **${id}** ya fue procesado o no se encuentra en estado pendiente.</p>`);
+            }
+
+            // 2. 💡 Respuesta HTML simple para el navegador (MÁS FÁCIL DE USAR DESDE EL CORREO)
+            const mensajeHTML = `<h1>✅ Permiso ${accion}</h1>
+                                <p>El permiso ID: ${updatedPermiso._id} del Aprendiz ${updatedPermiso.id_aprendiz} ha sido **${accion.toUpperCase()}** con éxito.</p>
+                                <p>Estado final: <strong>${updatedPermiso.estado.toUpperCase()}</strong></p>`;
+
+            res.status(200).send(mensajeHTML);
+
+        } catch (error) {
+            console.error('Error al actualizar estado del permiso:', error);
+            res.status(500).send(`<h1>❌ Error Interno</h1><p>Fallo al procesar la solicitud: ${error.message}</p>`);
+        }
+    },
+
+    aprobarPermiso: (req, res) => Permisocontroller.handleAprobarRechazar(req, res, 'aprobado'),
+
+    rechazarPermiso: (req, res) => Permisocontroller.handleAprobarRechazar(req, res, 'rechazado'),
+
 
     listapermisos: async (req, res) => {
         try {
@@ -78,7 +121,6 @@ const Permisocontroller = {
             });
         }
     },
-
     obtenerpermiso: async (req, res) => {
         try {
             const { query } = req.query;
@@ -206,6 +248,24 @@ const Permisocontroller = {
         } catch (error) {
             console.error('Error al eliminar permiso:', error);
             res.status(500).json({ msg: 'Error interno del servidor.' });
+        }
+    },
+    deleteAll: async (req, res) => {
+        try {
+            // Utiliza deleteMany({}) para eliminar todos los documentos.
+            const result = await Permiso.deleteMany({});
+
+            res.status(200).json({
+                success: true,
+                message: `Todos los permisos han sido eliminados. Total: ${result.deletedCount}`,
+                deletedCount: result.deletedCount
+            });
+        } catch (error) {
+            console.error('Error al eliminar todos los permisos:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor al intentar eliminar permisos.'
+            });
         }
     },
 

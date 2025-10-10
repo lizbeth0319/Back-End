@@ -45,7 +45,7 @@ const Helperpermiso = {
         }
         if (typeof motivo !== 'string') {
             throw new Error("El motivo debe ser una cadena de texto.");
-        } 
+        }
         if (motivo.length < 10 || motivo.length > 200) {
             throw new Error('El motivo debe ser específico y tener entre 10 y 200 caracteres.');
         }
@@ -83,14 +83,12 @@ const Helperpermiso = {
         }
         return true;
     },
-    traercorreoinstructor:async (intructor)=>{
-        const datosintructor= await User.find({nombre:String(intructor)})
-        if(!datosintructor){
-            throw new Error("no hay un correo para este instructor");
-            
-        }
-        console.log(datosintructor.email)
-        return datosintructor.email
+    traercorreoinstructor: async (instructorName) => {
+        console.log(instructorName)
+        
+        const instructor = await User.findOne({ nombre: instructorName }); 
+        
+        return instructor ? instructor.email : null; 
     }
 };
 
