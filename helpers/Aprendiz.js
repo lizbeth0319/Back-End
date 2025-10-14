@@ -1,15 +1,19 @@
 import Aprendiz from "../models/Aprendiz.js";
 
 const helperAprendiz = {
-    validateNombre: async (nombre) => {
-        console.log('ya valido nombre');
-        const aprendiz = await Aprendiz.findOne({ nombre });
-        if (aprendiz) {
-            throw new Error(`El nombre: ${nombre}, ya está registrado`);
+    validateNombre: async (nombre, { req }) => {
+        if (!nombre) return;
+        const idActual = req.params.id;
+        const query = {
+            nombre: nombre,
+            _id: { $ne: idActual }
+        };
+
+        const existeOtroAprendiz = await Aprendiz.findOne(query);
+        if (existeOtroAprendiz) {
+            throw new Error(`El nombre: ${nombre} ya está registrado por otro aprendiz.`);
         }
-        if (!nombre) {
-            throw new Error(`El nombre es obligatorio`);
-        }
+        return true;
     },
     validarFicha: async (ficha) => {
         console.log('ya valido ficha');
@@ -18,9 +22,9 @@ const helperAprendiz = {
         }
         if (ficha.length < 5) { //26 29 16 0
             throw new Error(`La ficha debe tener al menos 7 caracteres`);
-        }else if(ficha.length > 8){
+        } else if (ficha.length > 8) {
             throw new Error("la ficha debe ser menos de 8 caracteres");
-            
+
         }
     },
     validarPrograma: async (programa) => {
@@ -32,20 +36,25 @@ const helperAprendiz = {
             throw new Error("criterio especifico");
         }
     },
-    validarEmail: async (email) => {
-        console.log('ya valido email');
-        if (!email) {
-            throw new Error('El email es requerido');
-        }
+    validarEmail: async (email, { req }) => {
+        // Si el email no se envía en el body, la validación termina aquí.
+        if (!email) return;
+
+        // Obtener el ID del usuario que se está actualizando
+        const idActual = req.params.id;
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if (!emailRegex.test(email)) {
             throw new Error('El formato del correo electrónico no es válido. Debe ser del tipo usuario@dominio.com');
         }
-        const existeEmail = await Aprendiz.findOne({ email });
-        if (existeEmail) {
-        throw new Error(`El correo ${email} ya está registrado`);
+        const query = {
+            email: email,
+            _id: { $ne: idActual } 
+        };
+        const existeOtroAprendiz = await Aprendiz.findOne(query);
+        if (existeOtroAprendiz) {
+            throw new Error(`El email: ${email} ya está registrado por otro usuario.`);
+        }
         return true;
-    }
     },
     validartipo_programa: (tipo_programa) => {
         console.log('ya valido tipo_programa');

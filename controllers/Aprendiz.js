@@ -133,20 +133,16 @@ const ControllerAprendiz = {
     },
     actualizarAprendiz: async (req, res) => {
         try {
-            // 1. Desestructurar el ID de los parámetros de la URL
             const { id } = req.params;
             const updateData = req.body;
-            console.log("ID del Aprendiz a actualizar:", id);
 
-            // 2. Usar findByIdAndUpdate para una sola llamada a la base de datos
-            // Usamos { runValidators: true } para que Mongoose valide los datos del body (ej. formato de email, unicidad).
+            // ... (Tu lógica de findByIdAndUpdate) ...
             const updatedAprendiz = await Aprendiz.findByIdAndUpdate(
-                id,              // Criterio de búsqueda: el _id
-                updateData,      // Datos a actualizar
-                { new: true, runValidators: true } // new: true devuelve el documento actualizado
+                id,
+                updateData,
+                { new: true, runValidators: true }
             );
-
-            if (!updatedAprendiz) {
+            if (!updatedAprendiz) { 
                 return res.status(404).json({
                     success: false,
                     msg: "Aprendiz no encontrado por ID." // Mensaje de error ajustado
