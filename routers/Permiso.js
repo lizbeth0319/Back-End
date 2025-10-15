@@ -74,17 +74,10 @@ router.delete('/:id',
     Permisocontroller.eliminarpermiso);
 
 router.delete('/permisos/todos', Permisocontroller.deleteAll);
-//router.get('/porteria/permisos/aprobados')
-//•	GET /api/instructores/{id}/permisos/pendientes: 
-//correo
-/* router.put('/:id/aprobar', [
-    validarJWT,
-    validarRol(['instructor']) 
-], PermisoController.aprobarPermiso);
 
-router.put('/:id/denegar', [
+router.get('/permisos/generar-pdf/:id',
     validarJWT,
-    validarRol(['instructor']) 
-], PermisoController.denegarPermiso); */
+    Permisocontroller.generarPermiso
+)
 export default router
 //agragr
