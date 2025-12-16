@@ -42,8 +42,8 @@ export async function sendPermisoEmail(data) {
     const linkAprobar = `${BASE_URL}/api/permiso/permisos/aprobar/${permisoId}`;
     const linkRechazar = `${BASE_URL}/api/permiso/permisos/rechazar/${permisoId}`;
     
-    console.log(linkRechazar);
-    console.log(linkAprobar);
+    //console.log(linkRechazar);
+    //console.log(linkAprobar);
     
     const htmlContent = ` 
         <html>
@@ -77,7 +77,7 @@ export async function sendPermisoEmail(data) {
             html: htmlContent, 
         }); 
 
-        console.log(`Correo enviado. Message ID: ${info.messageId}`);
+        //console.log(`Correo enviado. Message ID: ${info.messageId}`);
         return { info };
     } catch (error) {
         console.error("Error al enviar correo con Nodemailer:", error);

@@ -14,7 +14,7 @@ async function getAprendizData(aprendizId) {
         { _id: aprendizId },
         'nombre ficha programa'
     );
-    console.log(aprendiz)
+    
     return aprendiz ? aprendiz.toObject() : null;
 }
 
@@ -56,21 +56,21 @@ async function getInstructorSignatureUrl(instructorId) {
     }
 
     const fullUrl = instructor.firma_url; 
-    console.log(`URL de firma construida: ${fullUrl}`); 
+    //console.log(`URL de firma construida: ${fullUrl}`); 
 
     return fullUrl;
 }
 
 async function getRecentApprovedPermisos(aprendizId) {
     try {
-        console.log(aprendizId)
+        
         const permisos = await Permiso.find({
             id_aprendiz: aprendizId,
             estado:"aprobado"
         })
             .sort({ fecha_solicitud: -1 })
             .lean();
-        console.log(permisos)
+        
         return permisos;
 
     } catch (error) {
@@ -82,7 +82,7 @@ async function getRecentApprovedPermisos(aprendizId) {
 
 const Permisocontroller = {
     crearPermiso: async (req, res) => {
-        console.log('entrada datos fuc crear');
+       // console.log('entrada datos fuc crear');
 
         try {
             const {
@@ -400,7 +400,7 @@ const Permisocontroller = {
     obtenerpermisoAprendiz: async (req, res) => {
         try {
             const { id_aprendiz } = req.params;
-            console.log(id_aprendiz);
+            
             const permisos = await Permiso.find({
                 id_aprendiz: { $regex: id_aprendiz, $options: 'i' }
             })
@@ -425,7 +425,7 @@ const Permisocontroller = {
     },
 
     buscarpermisoAprediz: async (req, res) => {
-        console.log("enrtre");
+        
         try {
             const { query } = req.query;
             if (!query) {
@@ -448,7 +448,7 @@ const Permisocontroller = {
                     msg: `No se encontraron aprendices con el término: "${query}"`
                 });
             }
-            console.log(aprendices);
+            
             res.status(200).json({
                 success: true,
                 msg: "Búsqueda de aprendices realizada exitosamente",
@@ -510,7 +510,7 @@ const Permisocontroller = {
         try {
             // 1. Obtener ID del aprendiz de los parámetros
             const aprendizId = req.params.id;
-            console.log(aprendizId)
+            
             if (!aprendizId) {
                 return res.status(400).send({ message: 'Debe proporcionar el ID del aprendiz.' });
             }
@@ -522,7 +522,7 @@ const Permisocontroller = {
                 return res.status(404).send({ message: 'Aprendiz no encontrado.' });
             }
 
-            console.log(aprendizData.nombre) 
+            //console.log(aprendizData.nombre) 
 
             // 3. Obtener los permisos APROBADOS
             const permisosData = await getRecentApprovedPermisos(aprendizData.nombre);

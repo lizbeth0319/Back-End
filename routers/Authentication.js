@@ -29,6 +29,6 @@ router.post('/auth/login', // email, password
         validarCampos
     ],
     AuthenticationController.Login)
-
+ 
 
 export default router;

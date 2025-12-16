@@ -89,6 +89,7 @@ const AuthenticationController = {
             const token = await generarJWT(usuario.email);
             res.json({
                 usuario: {
+                    id:usuario._id,
                     nombre: usuario.nombre,
                     email: usuario.email,
                     rol: usuario.rol
